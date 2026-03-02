@@ -252,7 +252,7 @@ class AppApiController extends Controller
 
         $predictionData = $response->json();
 
-        if (!$response->ok()) {
+        if (!$response->successful()) {
             $logger->logAiResponse($response->status(), $predictionData, (microtime(true) - $start) * 1000, $model);
             throw new \Exception('Replicate API error: ' . ($predictionData['detail'] ?? $response->body()));
         }

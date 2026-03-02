@@ -151,7 +151,7 @@ class AiTestController extends Controller
             ->post('https://api.replicate.com/v1/predictions', $payload);
         $data = $response->json();
 
-        if (!$response->ok()) {
+        if (!$response->successful()) {
             throw new \Exception('Replicate: ' . ($data['detail'] ?? $response->body()));
         }
 
