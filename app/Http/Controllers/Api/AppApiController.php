@@ -199,9 +199,11 @@ class AppApiController extends Controller
         // Get public URL to the uploaded image
         $imageUrl = Storage::disk('public')->url($photo->original_path);
 
-        // Ensure it's not a relative path string
-        if (!Str::startsWith($imageUrl, ['http://', 'https://'])) {
-            $imageUrl = url($imageUrl);
+        // Ensure it's not a relative path string or resolving to localhost
+        if (Str::startsWith($imageUrl, 'http://localhost')) {
+            $imageUrl = str_replace('http://localhost', request()->getSchemeAndHttpHost(), $imageUrl);
+        } elseif (!Str::startsWith($imageUrl, ['http://', 'https://'])) {
+            $imageUrl = request()->getSchemeAndHttpHost() . (Str::startsWith($imageUrl, '/') ? '' : '/') . $imageUrl;
         }
 
         // Build the specific inputs based on the model chosen

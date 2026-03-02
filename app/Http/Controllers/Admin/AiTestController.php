@@ -43,9 +43,11 @@ class AiTestController extends Controller
             $path = $request->file('image')->store('uploads/test', 'public');
             $imageUrl = Storage::disk('public')->url($path);
 
-            // If it's a relative path (common with default disk), make it absolute
-            if (!Str::startsWith($imageUrl, ['http://', 'https://'])) {
-                $imageUrl = url($imageUrl);
+            // If it's a relative path or resolving to localhost, make it absolute to the real host
+            if (Str::startsWith($imageUrl, 'http://localhost')) {
+                $imageUrl = str_replace('http://localhost', request()->getSchemeAndHttpHost(), $imageUrl);
+            } elseif (!Str::startsWith($imageUrl, ['http://', 'https://'])) {
+                $imageUrl = request()->getSchemeAndHttpHost() . (Str::startsWith($imageUrl, '/') ? '' : '/') . $imageUrl;
             }
 
             $provider = AppConfig::get('ai_provider', 'replicate');
